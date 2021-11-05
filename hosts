@@ -1,10 +1,10 @@
 [zoo]
-zoo1 ansible_host=167.172.102.235 ansible_user=user ansible_password=avogvqgmxvsu
-# zoo2 ansible_host=161.35.223.60 ansible_user=user ansible_password=voygxtethewn
-# zoo3 ansible_host=161.35.223.166 ansible_user=user ansible_password=pacitcsqqnkq
+zoo1 ansible_host= ansible_user=user ansible_password=
+zoo2 ansible_host= ansible_user=user ansible_password=
+zoo3 ansible_host= ansible_user=user ansible_password=
 
-# [ch]
-# ch1 ansible_host= ansible_password=
-# ch2 ansible_host= ansible_password=
-# ch3 ansible_host= ansible_password=
-# ch4 ansible_host= ansible_password=
+[ch]
+ch1 ansible_host= ansible_password=
+ch2 ansible_host= ansible_password=
+ch3 ansible_host= ansible_password=
+ch4 ansible_host= ansible_password=
