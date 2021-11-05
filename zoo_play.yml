@@ -1,0 +1,70 @@
+- name: Rebrain Clickhouse Final Task - ZooKeeper
+  hosts: zoo
+  become: yes
+
+  vars:
+    zoo_version: 3.7.0  
+    zoo_filename: apache-zookeeper-{{ zoo_version }}-bin
+    zoo_url: https://dlcdn.apache.org/zookeeper/zookeeper-{{ zoo_version }}/{{ zoo_filename }}.tar.gz
+    zoo_path: /opt/zookeeper
+    zoo_data_dir: /var/lib/zookeeper
+    zoo_user: zookeeper
+    zoo_binary: zoo_binaries.tar.gz
+
+  tasks:
+  - name: Create Zookeeper Group
+    ansible.builtin.group:
+      name: '{{ zoo_user }}'
+
+  - name: Create Zookeeper User
+    ansible.builtin.user: 
+      name: '{{ zoo_user }}'
+      group: '{{ zoo_user }}'
+    
+    tags:
+       - folders
+
+  - name: Install JRE
+    ansible.builtin.apt:
+      pkg: default-jre-headless
+      state: present
+    
+    tags:
+       - setup
+
+  - name: Create Directory For Zookeeper
+    ansible.builtin.file: 
+      state: directory
+      path: '{{ item }}/'
+      mode: 0755
+      owner: '{{ zoo_user }}'
+      group: '{{ zoo_user }}'
+    
+    with_items:
+    - ["{{ zoo_path }}", "{{ zoo_data_dir }}"]
+
+    tags: 
+       - folders
+     
+       
+  - name: Download and Unpack Zookeeper binaries
+    ansible.builtin.unarchive: 
+      src: "{{zoo_url}}"
+      dest: "{{zoo_path}}"
+      remote_src: yes
+
+    tags:
+       - binaries
+      
+  - name: Move Zookeeper binaries
+    copy: remote_src=True src={{ zoo_path }}/{{ zoo_filename }}/ dest={{ zoo_path }}/
+
+    tags:
+       - moving
+
+  - name: Upload Zookeeper config file
+    copy: src=./zoo.cfg dest={{zoo_path}}/conf/zoo.cfg owner={{ zoo_user }} group={{ zoo_user }}
+
+
+  - name: Upload Zookeeper systemd file
+    copy: src=./zookeeper.service dest=/lib/systemd/system/zookeeper.service owner={{ zoo_user }} group={{ zoo_user }}
