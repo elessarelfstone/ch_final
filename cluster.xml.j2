@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<yandex>
+  <remote_servers>
+    <{{ ch_cluster_name }}>
+{% for shard_name, replicas in clickhouse_shards.items() | list %}
+
+      <shard>
+        <internal_replication>true</internal_replication>
+{% for replica in replicas %}
+        <replica>
+          <host>{{ replica['host'] }}</host>
+          <port>{{ replica['port'] | default(9000) }}</port>
+        </replica>
+{% endfor %}
+      </shard>
+
+{% endfor %}
+    </{{ ch_cluster_name }}>
+  </remote_servers>
+
+  <zookeeper-servers>
+{% for server in clickhouse_zookeeper_nodes %}
+    <node index="{{loop.index}}">
+{% for key, value in server.items() %}
+      <{{ key }}>{{ value }}</{{ key }}>
+{% endfor %}
+    </node>
+{% endfor %}
+  </zookeeper-servers>
+
+  <macros>
+    <cluster>{{ ch_cluster_name }}</cluster> 
+    <replica></replica> 
+    <shard>01</shard> 
+  </macros>
+
+</yandex>

@@ -1,4 +1,4 @@
-- name: Rebrain Clickhouse Final Task - ZooKeeper
+- name: Rebrain Clickhouse Final Task - ZooKeeper Cluster
   hosts: zoo
   become: yes
 
@@ -8,18 +8,18 @@
     zoo_url: https://dlcdn.apache.org/zookeeper/zookeeper-{{ zoo_version }}/{{ zoo_filename }}.tar.gz
     zoo_path: /opt/zookeeper
     zoo_data_dir: /var/lib/zookeeper
-    zoo_user: zookeeper
+    zoo: zookeeper
     zoo_binary: zoo_binaries.tar.gz
 
   tasks:
   - name: Create Zookeeper Group
     ansible.builtin.group:
-      name: '{{ zoo_user }}'
+      name: '{{ zoo }}'
 
   - name: Create Zookeeper User
     ansible.builtin.user: 
-      name: '{{ zoo_user }}'
-      group: '{{ zoo_user }}'
+      name: '{{ zoo }}'
+      group: '{{ zoo }}'
     
     tags:
        - folders
@@ -37,8 +37,8 @@
       state: directory
       path: '{{ item }}/'
       mode: 0755
-      owner: '{{ zoo_user }}'
-      group: '{{ zoo_user }}'
+      owner: '{{ zoo }}'
+      group: '{{ zoo }}'
     
     with_items:
     - ["{{ zoo_path }}", "{{ zoo_data_dir }}"]
@@ -63,8 +63,14 @@
        - moving
 
   - name: Upload Zookeeper config file
-    copy: src=./zoo.cfg dest={{zoo_path}}/conf/zoo.cfg owner={{ zoo_user }} group={{ zoo_user }}
+    copy: src=./zoo.cfg dest={{zoo_path}}/conf/zoo.cfg owner={{ zoo }} group={{ zoo }}
 
 
   - name: Upload Zookeeper systemd file
-    copy: src=./zookeeper.service dest=/lib/systemd/system/zookeeper.service owner={{ zoo_user }} group={{ zoo_user }}
+    copy: src=./zookeeper.service dest=/lib/systemd/system/zookeeper.service owner={{ zoo }} group={{ zoo }}
+
+
+  - name: Start Zookeeper service 
+    ansible.builtin.service:
+      name: zookeeper
+      state: started

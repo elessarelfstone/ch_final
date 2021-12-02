@@ -1,0 +1,86 @@
+- name: Rebrain Clickhouse Final Task - Clickhouse Cluster
+  hosts: ch
+  become: yes
+  
+  vars:
+    ch: clickhouse
+    ch_cluster_name: "mycluster"
+    clickhouse_path_configdir: "/etc/clickhouse-server"
+    clickhouse_path_logdir: "/var/log/clickhouse-server"
+    clickhouse_path_data: "{{ clickhouse_path_base }}/clickhouse/"
+    clickhouse_path_tmp: "{{ clickhouse_path_base }}/clickhouse/tmp/"
+    clickhouse_service: 'clickhouse-server.service'
+    ch_cluster: "{{ groups.ch }}"
+    # zoo: "{{ groups.zoo }}"
+    clickhouse_shards:
+      sh1:
+        - { host: "{{ hostvars[groups['ch'][0]].ansible_host }}", port: 9000 }
+        - { host: "{{ hostvars[groups['ch'][1]].ansible_host }}", port: 9000 }
+      sh2:
+        - { host: "{{ hostvars[groups['ch'][2]].ansible_host }}", port: 9000 }
+        - { host: "{{ hostvars[groups['ch'][3]].ansible_host }}", port: 9000 }
+
+    clickhouse_zookeeper_nodes:
+      - { host: "{{ hostvars[groups['ch'][0]].ansible_host }}", port: 2181 }
+      - { host: "{{ hostvars[groups['ch'][1]].ansible_host }}", port: 2181 }
+      - { host: "{{ hostvars[groups['ch'][2]].ansible_host }}", port: 2181 }
+
+
+  tasks:
+
+  - name: Install Dependencies
+    ansible.builtin.apt:
+      update_cache: yes
+      pkg: 
+      - apt-transport-https
+      - ca-certificates
+      - dirmngr
+      state: latest
+
+  - name: Install Keys
+    ansible.builtin.apt_key:
+      keyserver: hkp://keyserver.ubuntu.com:80
+      id: E0C56BD4
+  
+  - name: Add repo
+    ansible.builtin.lineinfile:
+      path: /etc/apt/sources.list.d/clickhouse.list
+      line: deb https://repo.clickhouse.com/deb/stable/ main/
+      create: yes
+
+
+  - name: Install Clickhouse Server
+    ansible.builtin.apt:
+      update_cache: yes
+      pkg: 
+      - clickhouse-server
+      - clickhouse-client
+      state: latest
+
+   
+  - name: Start Clickhouse service
+    ansible.builtin.service:
+      name: clickhouse-server
+      state: started
+
+
+  - name: Create Clickhouse Group
+    ansible.builtin.group:
+      name: '{{ ch }}'
+
+
+  - name: Create Clickhouse User
+    ansible.builtin.user: 
+      name: '{{ ch }}'
+      group: '{{ ch }}'
+  
+
+  - name: Create Cluster Config
+    template: 
+      src: cluster.xml.j2
+      dest: "{{ clickhouse_path_configdir }}/cluster.xml"
+      owner: "{{ ch }}"
+      group: "{{ ch }}"
+      mode: "ug=rw,o-rwx"
+    
+    become: true
