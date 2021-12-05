@@ -73,9 +73,30 @@
     ansible.builtin.user: 
       name: '{{ ch }}'
       group: '{{ ch }}'
-  
+
+
+  # - name: Upload Clickhouse Config
+  #   ansible.builtin.copy:
+  #     src: ./config.xml
+  #     dest: "/etc/clickhouse-server/config.xml"
+  #     owner: clickhouse
+  #     group: clickhouse
+  #     mode: '0644'
+
+  #   become: true
 
   - name: Create Cluster Config
+    template: 
+      src: config.xml.j2
+      dest: "{{ clickhouse_path_configdir }}/config.xml"
+      owner: "{{ ch }}"
+      group: "{{ ch }}"
+      mode: '0644'
+    
+    become: true
+
+
+  - name: Create Clickhouse Config
     template: 
       src: cluster.xml.j2
       dest: "{{ clickhouse_path_configdir }}/cluster.xml"
@@ -84,3 +105,21 @@
       mode: "ug=rw,o-rwx"
     
     become: true
+
+  - name: Restart service
+    ansible.builtin.systemd:
+      state: restarted
+      name: clickhouse-server
+
+
+  # - name: Add IP address of all hosts to all hosts
+  #   lineinfile:
+  #     dest: /etc/hosts
+  #     line: "{{ item[0]}} {{ item.ansible_host }}"
+  #     state: present
+  #   with_items: groups['ch']
+
+  - name: "Build hosts file"
+    lineinfile: dest=/etc/hosts line="{{ hostvars[item].ansible_default_ipv4.address }} {{item}}" state=present
+    # when: hostvars[item].ansible_default_ipv4.address is defined
+    with_items: groups['ch']

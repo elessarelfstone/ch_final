@@ -30,7 +30,7 @@
 
   <macros>
     <cluster>{{ ch_cluster_name }}</cluster> 
-    <replica></replica> 
+    <replica>{{ ansible_default_ipv4.address }}</replica> 
     <shard>01</shard> 
   </macros>
 

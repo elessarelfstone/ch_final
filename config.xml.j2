@@ -130,8 +130,8 @@
          This setting could be used to switch replication to another network interface
          (the server may be connected to multiple networks via multiple addresses)
       -->
-    <!--
-    <interserver_http_host>example.yandex.ru</interserver_http_host>
+    
+    <!-- <interserver_http_host>{{ ansible_default_ipv4.address }}</interserver_http_host>
     -->
 
     <!-- You can specify credentials for authenthication between replicas.
@@ -156,7 +156,7 @@
     <!-- <listen_host>::</listen_host> -->
 
     <!-- Same for hosts without support for IPv6: -->
-    <!-- <listen_host>0.0.0.0</listen_host> -->
+    <listen_host>0.0.0.0</listen_host>  
 
     <!-- Default values - try listen localhost on IPv4 and IPv6. -->
     <!--
@@ -587,10 +587,13 @@
     <!-- Configuration of clusters that could be used in Distributed tables.
          https://clickhouse.tech/docs/en/operations/table_engines/distributed/
       -->
-    <remote_servers incl="clickhouse_remote_servers">
-    </remote_servers>
     
     <include_from>/etc/clickhouse-server/cluster.xml</include_from>
+
+    <remote_servers incl="remote_servers">
+    </remote_servers>
+    
+    
 
     <!-- The list of hosts allowed to use in URL-related storage engines and table functions.
         If this section is not present in configuration, all hosts are allowed.
@@ -633,12 +636,8 @@
 
          See https://clickhouse.tech/docs/en/engines/table-engines/mergetree-family/replication/#creating-replicated-tables
       -->
-    <!--
-    <macros>
-        <shard>01</shard>
-        <replica>example01-01-1</replica>
-    </macros>
-    -->
+    <macros incl="macros" optional="true"></macros>
+    
 
 
     <!-- Reloading interval for embedded dictionaries, in seconds. Default: 3600. -->

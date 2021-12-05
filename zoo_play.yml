@@ -28,6 +28,7 @@
     ansible.builtin.apt:
       pkg: default-jre-headless
       state: present
+      update_cache: yes
     
     tags:
        - setup

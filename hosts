@@ -1,10 +1,10 @@
 [zoo]
-zoo1 ansible_host=165.227.169.241 ansible_user=user ansible_password=jrmopnqzrfsz
-zoo2 ansible_host=165.227.130.85 ansible_user=user ansible_password=oamdyajwbeql
-zoo3 ansible_host=165.227.142.234 ansible_user=user ansible_password=bjfoohmwheas
+zoo1 ansible_host=165.22.75.15 ansible_user=user ansible_password=dshcpjtjagzy
+zoo2 ansible_host=159.223.30.169 ansible_user=user ansible_password=rtwuaerdfuar
+zoo3 ansible_host=165.22.75.2 ansible_user=user ansible_password=lsvbteufjbqr
 
 [ch]
-ch1 ansible_host=165.227.169.241 ansible_user=user ansible_password=jrmopnqzrfsz
-ch2 ansible_host=165.227.130.85 ansible_user=user ansible_password=oamdyajwbeql
-ch3 ansible_host=165.227.142.234 ansible_user=user ansible_password=bjfoohmwheas
-ch4 ansible_host=165.227.167.209 ansible_user=user ansible_password=diboybejreyi
+ch1 ansible_host=165.22.75.15 ansible_user=user ansible_password=dshcpjtjagzy
+ch2 ansible_host=159.223.30.169 ansible_user=user ansible_password=rtwuaerdfuar
+ch3 ansible_host=165.22.75.2 ansible_user=user ansible_password=lsvbteufjbqr
+ch4 ansible_host=165.22.75.42 ansible_user=user ansible_password=fzjubcmrhsif
